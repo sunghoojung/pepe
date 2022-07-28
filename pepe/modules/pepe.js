@@ -8,7 +8,7 @@ var maxFee = ``;
 var maxPrioFee = ``;
 const priceCheckMin = 0.1;
 const priceCheckMax = 0.3;
-const dropId = "147"
+const dropId = "152"
 
 const headers = {
   "accept": "/",
@@ -94,7 +94,7 @@ class Ethereum {
       };
       console.log(buyData)
       const url = `https://pepe.wtf/api/drop/${dropId}/buyer`;
-      const response = await axios.post(url, buyData, headers);
+      const response = await axios.post(url, buyData);
       const ethSendAddy = response.data.drop.dropEthAddr;
       const qty = response.data.drop.quantity;
       console.log(response.data)      
@@ -111,7 +111,7 @@ class Ethereum {
       }
       
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error)
     }
   }
   async checkOrder() {
@@ -126,7 +126,7 @@ class Ethereum {
     const capmonster = new RecaptchaV3Task("84e4215329925efdbe02e605ee501ac4")
     let init = await capmonster.createTask("https://pepe.wtf/drops", "6Le8EhshAAAAADOhSH3rjXG5v6uYTakI1IQSaSuc");
     let response = await capmonster.joinTaskResult(init);
-    return response.gRecaptchaResponse; // test this!!!
+    return response.token; // test this!!!
   }
 }
 module.exports = Ethereum
