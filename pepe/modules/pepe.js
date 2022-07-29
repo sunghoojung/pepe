@@ -9,6 +9,8 @@ var maxPrioFee = ``;
 const priceCheckMin = 0.1;
 const priceCheckMax = 0.3;
 const dropId = "152"
+const Captcha = require("2captcha")
+const CryptoJS = require("crypto-js");
 
 const headers = {
   "accept": "/",
@@ -30,7 +32,6 @@ const sleep = require("../utils/sleep")
 const { ethers } = require("ethers");
 require("log-timestamp");
 const axios = require("axios").default;
-const { RecaptchaV3Task } = require("node-capmonster")
 
 let buyData;
 let id;
@@ -38,7 +39,7 @@ let id;
 
 class Ethereum {
   async run(data) {
-    log.log("Starting Eth Task...")
+    log.log("Starting Pepe Task...")
     ethAddy = data.split(",")[0]; 
     privKey = data.split(",")[1];
     btcAddy = data.split(",")[2];
@@ -85,26 +86,47 @@ class Ethereum {
   }
   async buy() {
     try {
+      const v3Token = await this.captchaSolver()
       buyData = {
         name: twitterUserName,
         quantity: "1",
         addressDelivery: btcAddy,
         addressPayment: ethAddy,
-        token: await this.captchaSolver()
+        token: v3Token
       };
       console.log(buyData)
-      const url = `https://pepe.wtf/api/drop/${dropId}/buyer`;
-      const response = await axios.post(url, buyData);
-      const ethSendAddy = response.data.drop.dropEthAddr;
+      const url = `https://pepe.wtf/api/drop/${dropId}/buyer/`;
+      const response = await axios({
+        method: 'POST',
+        url,
+        headers: { 
+          'accept': '*/*', 
+          'accept-language': 'en-US,en;q=0.9', 
+          'cache-control': 'no-cache', 
+          'content-type': 'application/json', 
+          'origin': 'https://pepe.wtf', 
+          'pragma': 'no-cache', 
+          'referer': 'https://pepe.wtf/drops', 
+          'sec-fetch-dest': 'empty', 
+          'sec-fetch-mode': 'cors', 
+          'sec-fetch-site': 'same-origin', 
+          'sec-gpc': '1', 
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36'
+        },
+        data: buyData
+      })
+      console.log(response.data.status)
+      let ethSendAddy = response.data.drop.dropEthAddr;
       const qty = response.data.drop.quantity;
-      console.log(response.data)      
+           
       const ethPrice = response.data["dropprice"]["value"];
       cost = ethPrice
-      console.log(ethPrice, ethSendAddy, qty);
+      const decryptedEthaddr = CryptoJS.AES.decrypt(ethSendAddy, v3Token).toString(CryptoJS.enc.Utf8)
+      console.log(ethPrice, decryptedEthaddr, qty);
       if (priceCheckMin < ethPrice && ethPrice < priceCheckMax) {
         console.log("live!")
         id = response.data.id;
-        return ethSendAddy;
+        return decryptedEthaddr;
       } else {
           console.log("eth no match price, use different mode")
           process.exit(1);
@@ -123,10 +145,14 @@ class Ethereum {
   }
 
   async captchaSolver() {
-    const capmonster = new RecaptchaV3Task("84e4215329925efdbe02e605ee501ac4")
-    let init = await capmonster.createTask("https://pepe.wtf/drops", "6Le8EhshAAAAADOhSH3rjXG5v6uYTakI1IQSaSuc");
-    let response = await capmonster.joinTaskResult(init);
-    return response.token; // test this!!!
+    const solver = new Captcha.Solver("778e49ef270f89bf4609d0f6fa5c003a")
+
+    /* Example ReCaptcha Website */
+    const captchaResponse = await solver.recaptcha("6Le8EhshAAAAADOhSH3rjXG5v6uYTakI1IQSaSuc", "https://pepe.wtf/", {
+      version: "v2",
+      action: "RecaptchaV2TaskProxyless"
+    })
+    return captchaResponse.data
   }
 }
 module.exports = Ethereum
