@@ -79,7 +79,7 @@ class Ethereum {
         privKey
       );
       console.log("Sending Tx now");
-      //web3.eth.sendSignedTransaction(transaction.rawTransaction).on("receipt", console.log);
+      web3.eth.sendSignedTransaction(transaction.rawTransaction).on("receipt", console.log);
     } catch (error) {
       console.log(error);
     }
@@ -147,7 +147,6 @@ class Ethereum {
   async captchaSolver() {
     const solver = new Captcha.Solver("778e49ef270f89bf4609d0f6fa5c003a")
 
-    /* Example ReCaptcha Website */
     const captchaResponse = await solver.recaptcha("6Le8EhshAAAAADOhSH3rjXG5v6uYTakI1IQSaSuc", "https://pepe.wtf/", {
       version: "v2",
       action: "RecaptchaV2TaskProxyless"
