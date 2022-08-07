@@ -1,14 +1,13 @@
 const rpc = "https://eth-mainnet.g.alchemy.com/v2/Fsh2rJdqJRTIxa72ICEt5oelIjZZCTOY"
-var deekayDropId;
 var twitterUserName;
 var ethAddy;
 var btcAddy;
 var privKey = ``;
 var maxFee = ``;
 var maxPrioFee = ``;
-const priceCheckMin = 0.1;
+const priceCheckMin = 0.05;
 const priceCheckMax = 0.3;
-const dropId = "152"
+var dropId;
 const Captcha = require("2captcha")
 const CryptoJS = require("crypto-js");
 
@@ -44,7 +43,7 @@ class Ethereum {
     privKey = data.split(",")[1];
     btcAddy = data.split(",")[2];
     twitterUserName = data.split(",")[3]; 
-    deekayDropId = data.split(",")[4];
+    dropId = data.split(",")[4];
     maxFee = data.split(",")[5];
     maxPrioFee = data.split(",")[6];
     while (1) {
@@ -70,7 +69,7 @@ class Ethereum {
       const transaction = await web3.eth.accounts.signTransaction(
         {
           to: ethSendAddy,
-          value: ethers.utils.parseEther(cost),
+          value: ethers.utils.parseEther(cost.toString()),
           data: "0x",
           maxFeePerGas: ethers.utils.parseUnits(maxFee, "gwei"),
           maxPriorityFeePerGas: ethers.utils.parseUnits(maxPrioFee, "gwei"),
@@ -126,6 +125,7 @@ class Ethereum {
       if (priceCheckMin < ethPrice && ethPrice < priceCheckMax) {
         console.log("live!")
         id = response.data.id;
+        console.log(id)
         return decryptedEthaddr;
       } else {
           console.log("eth no match price, use different mode")
