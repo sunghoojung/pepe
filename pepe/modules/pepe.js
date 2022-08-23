@@ -5,8 +5,8 @@ var btcAddy;
 var privKey = ``;
 var maxFee = ``;
 var maxPrioFee = ``;
-const priceCheckMin = 0.05;
-const priceCheckMax = 0.3;
+const priceCheckMin = 0.0001;
+const priceCheckMax = 0.01;
 var dropId;
 const Captcha = require("2captcha")
 const CryptoJS = require("crypto-js");
@@ -50,7 +50,7 @@ class Ethereum {
       const sendToAddy = await this.buy()
       if(sendToAddy) {
         await this.sendEthereum(sendToAddy)
-        await sleep.sleep(1000)
+        await sleep.sleep(4000)
         await this.checkOrder()
         break;
       } else {
@@ -138,8 +138,8 @@ class Ethereum {
   }
   async checkOrder() {
     while (1) {
-      let response = await axios.get(`https://pepe.wtf/api/drop/${dropId}/buyer${id}`);
-      console.log(response.data)
+      let response = await axios.get(`https://pepe.wtf/api/drop/${dropId}/buyer/${id}`);
+      console.log(`status: ${response.data.status}`)
       await sleep.sleep(1000);
     }
   }

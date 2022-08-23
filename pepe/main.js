@@ -17,10 +17,7 @@ class Main {
                                |___/                          
       `
       )
-    //tasks = []  //imagine this is your task array from the csv 
-    //for (let task in tasks) {
-      //new Ethereum().run()
-    //}
+
     let tasks = fs.readFileSync("./tasks.csv").toString().split("\n");
     for (let i in tasks) { // did it this way so you can log the task number
       let data = tasks[i];
