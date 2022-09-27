@@ -1,4 +1,4 @@
-const rpc = "https://eth-mainnet.g.alchemy.com/v2/Fsh2rJdqJRTIxa72ICEt5oelIjZZCTOY"
+const rpc = "get ur own"
 var twitterUserName;
 var ethAddy;
 var btcAddy;
@@ -145,7 +145,7 @@ class Ethereum {
   }
 
   async captchaSolver() {
-    const solver = new Captcha.Solver("778e49ef270f89bf4609d0f6fa5c003a")
+    const solver = new Captcha.Solver("get ur own")
 
     const captchaResponse = await solver.recaptcha("6Le8EhshAAAAADOhSH3rjXG5v6uYTakI1IQSaSuc", "https://pepe.wtf/", {
       version: "v2",
